@@ -4,23 +4,32 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Repositories;
+use Services;
 
 class GrabController extends Controller
 {
-    private $__places_repo;
+    private $__placesRepo;
+    private $__grabService;
 
-    public function __construct(Repositories\IRepository $placesRepository){
-        $this->__places_repo = $placesRepository;
+    public function __construct(
+            Repositories\IRepository $placesRepository, 
+            Services\Grab\IGrabService $grabService
+            ){
+        $this->__placesRepo = $placesRepository;
+        $this->__grabService = $grabService;
     }
 
 
     public function Grab(Request $request){
-        $placesArr = $this->__places_repo->get(20);
+        $placesArr = $this->__placesRepo->get(20);
         
-       foreach($placesArr as $_place){
-        echo $_place->postcode . PHP_EOL;
+        $parsedArr = [];
+        
+       foreach($placesArr as $_place){           
+            $parsedArr = $this->__grabService->parse($_place->city . ',,' . $_place->postcode);
+
        }
 
-        return "END";
+        return json_encode($parsedArr);
     }
 }

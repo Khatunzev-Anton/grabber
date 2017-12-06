@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7ed8ea811a67c1ccb45e140e79c83888",
-    "content-hash": "5eba86da256ddeb8084c32d3d10e18d3",
+    "hash": "5fa50742fe94992e59cd7342edf87c1a",
+    "content-hash": "ef49510e222d3179eeb4bb0cbb2bd0dd",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1258,6 +1258,49 @@
                 "uuid"
             ],
             "time": "2017-09-22 20:46:04"
+        },
+        {
+            "name": "shark/simple_html_dom",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/samacs/simple_html_dom.git",
+                "reference": "830223ef1faa89bf8bbd8b231bd228993fd4bd3b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/samacs/simple_html_dom/zipball/830223ef1faa89bf8bbd8b231bd228993fd4bd3b",
+                "reference": "830223ef1faa89bf8bbd8b231bd228993fd4bd3b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.2.4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "simple_html_dom.php"
+                ],
+                "files": [
+                    "simple_html_dom.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "S.C. Chen",
+                    "email": "me578022@gmail.com",
+                    "homepage": "http://simplehtmldom.sourceforge.net/"
+                }
+            ],
+            "description": "Simple HTML DOM package.",
+            "homepage": "http://simplehtmldom.sourceforge.net/",
+            "keywords": [
+                "dom",
+                "php dom"
+            ],
+            "time": "2017-11-09 21:14:14"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3912,7 +3955,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "shark/simple_html_dom": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

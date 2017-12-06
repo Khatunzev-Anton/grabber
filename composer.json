@@ -8,7 +8,8 @@
         "php": ">=7.0.0",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "shark/simple_html_dom": "dev-master"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
@@ -23,7 +24,9 @@
         ],
         "psr-4": {
             "App\\": "app/",
-            "Repositories\\": "app/Repositories/"
+            "Repositories\\": "app/Repositories/",
+            "Services\\": "app/Services/",
+            "Services\\Grab\\": "app/Services/Grab"
         }
     },
     "autoload-dev": {

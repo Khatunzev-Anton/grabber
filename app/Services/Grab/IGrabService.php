@@ -1,7 +1,10 @@
 <?php
 
-namespace Servicves\Grab;
+namespace Services\Grab;
 
 interface IGrabService{
 
+    public function getUrl();
+
+    public function parse($relativeUrl);
 }

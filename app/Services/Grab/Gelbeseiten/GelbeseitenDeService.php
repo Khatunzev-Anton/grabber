@@ -1,8 +1,8 @@
 <?php
 
-namespace Servicves\Grab\Gelbeseiten;
+namespace Services\Grab\Gelbeseiten;
 
-use Servicves\Grab as Grab;
+use Services\Grab as Grab;
 
 class GelbeseitenDeService implements Grab\IGrabService{
     
@@ -11,7 +11,7 @@ class GelbeseitenDeService implements Grab\IGrabService{
 
     private $usePaging = false;
 
-    public function __construct($usePaging){
+    public function __construct($usePaging = true){
         $this->usePaging = $usePaging;
     }
     
@@ -20,11 +20,28 @@ class GelbeseitenDeService implements Grab\IGrabService{
     }
 
     public function parse($relativeUrl){
+         $parsedArr = [];
+         $PARSED_BLOCK_COUNT = 15;
          $this->pageUrl = $this->baseUrl . $relativeUrl;
          do{
              //parse;
-            $this->pageUrl = $this->getNextPageUrl();
-         }while(false);
+             $parsedBlock = $this->parsePage($this->pageUrl);
+             $parsedArr = array_merge($parsedArr, $parsedBlock);
+             if($this->usePaging){
+                $this->pageUrl = $this->getNextPageUrl();
+             }
+         }while(($this->usePaging) && (count($parsedBlock) >= $PARSED_BLOCK_COUNT));
+         return $parsedArr;
+    }
+
+    private function parsePage($url){
+        $resultArr = [];
+        /*****************/
+        $resultArr[] = 'a';
+        $resultArr[] = 'b';
+        $resultArr[] = 'c';
+        /*****************/
+        return $resultArr;
     }
 
     private function getNextPageUrl(){
