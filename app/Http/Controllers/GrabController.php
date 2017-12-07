@@ -26,8 +26,10 @@ class GrabController extends Controller
         $parsedArr = [];
         
        foreach($placesArr as $_place){           
-            $parsedArr = $this->__grabService->parse($_place->city . ',,' . $_place->postcode);
-
+            $parsedArr = $this->__grabService->parse($_place->city . ',,' . $_place->postcode . ',,,umkreis-10000');
+            /***********/
+            break;
+            /***********/
        }
 
         return json_encode($parsedArr);
