@@ -18,14 +18,14 @@ class CreateLawersTable extends Migration
             $t->integer('placeId')->nullable();
             $t->bigInteger('uniqueId')->nullable();
             $t->string('name',255)->nullable();
-            $t->string('phone',100)->nullable();
+            $t->string('phone',255)->nullable();
             $t->string('email',255)->nullable();
-            $t->string('website',100)->nullable();
+            $t->string('website',255)->nullable();
             $t->string('streetAddress',255)->nullable();
             $t->string('postCode',255)->nullable();
             $t->string('addressLocality',255)->nullable();
-            $t->string('lat',20)->nullable();
-            $t->string('lon',20)->nullable();
+            $t->string('lat',40)->nullable();
+            $t->string('lon',40)->nullable();
         });
     }
 
