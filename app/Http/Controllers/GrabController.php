@@ -8,30 +8,42 @@ use Services;
 
 class GrabController extends Controller
 {
-    private $__placesRepo;
+    private $__lookupRepo;
+    private $__repo;
     private $__grabService;
 
     public function __construct(
-            Repositories\IRepository $placesRepository, 
+            Repositories\ILookupRepository $lookupRepository, 
+            Repositories\IRepository $repository, 
             Services\Grab\IGrabService $grabService
             ){
-        $this->__placesRepo = $placesRepository;
+        $this->__lookupRepo = $lookupRepository;
+        $this->__repo = $repository;
         $this->__grabService = $grabService;
     }
 
 
     public function Grab(Request $request){
-        $placesArr = $this->__placesRepo->get(20);
+        $lookupArr = $this->__lookupRepo->get(1000);
+        $recordsCount = 0;
+        $lookupsCount = 0;
         
-        $parsedArr = [];
-        
-       foreach($placesArr as $_place){           
-            $parsedArr = $this->__grabService->parse($_place->city . ',,' . $_place->postcode . ',,,umkreis-10000');
-            /***********/
-            break;
-            /***********/
-       }
+        ob_end_flush();
 
-        return json_encode($parsedArr);
+        foreach($lookupArr as $_lookupEl){    
+            $resultsArr = $this->__grabService->parse($_lookupEl);
+            $this->__repo->save($resultsArr);
+
+            $recordsCount+= count($resultsArr);
+            $lookupsCount++;
+
+            echo "<br/>lookup $lookupsCount finished. Total records: $recordsCount";
+
+            $resultsArr = null;
+        }
+
+        $lookupArr = null;
+
+        return "<br/>Complete!<br/>Records Count:$recordsCount<br/>Lookups:$lookupsCount";
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 
 use App\Models;
 use Services\Grab;
-use Services\Grab\Gelbeseiten;
+use Services\Grab\Gelbeseiten as Gelbeseiten;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        
         $this->app->bind('Services\Grab\IGrabService', 'Services\Grab\Gelbeseiten\GelbeseitenDeService');
     }
 }

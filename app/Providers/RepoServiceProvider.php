@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 
 use App\Models;
 use Repositories\Places;
+use Repositories\Lawers;
 
 
 class RepoServiceProvider extends ServiceProvider
@@ -27,11 +28,18 @@ class RepoServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $repoClassName = 'Repositories\Places\PlacesRepository';
-        $modelClassName = 'App\Models\Place';
+        $lookupRepoClassName = 'Repositories\Places\PlacesRepository';
+        $lookupModelClassName = 'App\Models\Place';
 
-        $this->app->bind('Repositories\IRepository', function ($app) use($repoClassName, $modelClassName) {
-            return new $repoClassName(new $modelClassName);
+        $this->app->bind('Repositories\ILookupRepository', function ($app) use($lookupRepoClassName, $lookupModelClassName) {
+            return new $lookupRepoClassName(new $lookupModelClassName);
+        });
+
+        $RepoClassName = 'Repositories\Lawers\LawersRepository';
+        $ModelClassName = 'App\Models\Lawer';
+
+        $this->app->bind('Repositories\IRepository', function ($app) use($RepoClassName, $ModelClassName) {
+            return new $RepoClassName(new $ModelClassName);
         });
     }
 }

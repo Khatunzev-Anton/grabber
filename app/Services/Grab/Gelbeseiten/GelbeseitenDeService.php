@@ -2,8 +2,8 @@
 
 namespace Services\Grab\Gelbeseiten;
 
-
 use Services\Grab as Grab;
+use Exception;
 
 class GelbeseitenDeService implements Grab\IGrabService{
     
@@ -20,32 +20,34 @@ class GelbeseitenDeService implements Grab\IGrabService{
         return $this->baseUrl;
     }
 
-    public function parse($relativeUrl){
+    public function parse($lookupElement){
          $parsedArr = [];
          $PARSED_BLOCK_COUNT = 15;
-         ob_end_flush();
-         $this->pageUrl = $this->baseUrl . $relativeUrl;
-         $cnt = 0;
+         $this->pageUrl = $this->baseUrl . ($lookupElement->city . ',,' . $lookupElement->postcode . ',,,umkreis-30000');
          do{
-             //parse;
-             echo "parse start";
              $parsedBlock = [];
-             $parsedBlock = $this->parsePage($this->pageUrl);
+             $parsedBlock = $this->parsePage($this->pageUrl,$lookupElement->id);
              $parsedArr = array_merge($parsedArr, $parsedBlock);
-             echo "$cnt:" . $this->pageUrl . PHP_EOL;
-            $cnt++;
-            break;
              if($this->usePaging){
                 $this->pageUrl = $this->getNextPageUrl();
              }
-         }while(($this->usePaging) && (count($parsedBlock) >= $PARSED_BLOCK_COUNT) && ($cnt < 7));
+         }while(($this->usePaging) && (count($parsedBlock) >= $PARSED_BLOCK_COUNT));
          return $parsedArr;
     }
 
-    private function parsePage($url){
+    private function parsePage($url, $placeId){
         $resultArr = [];
         
-        $html = file_get_html($url);
+        echo "<br/>...parsing $url";
+        try{
+            $html = @file_get_html($url);
+            if($html === FALSE){
+                throw new Exception('error occurred');
+            }
+        }catch(Exception $e){
+            echo "<br/>failed to open page $url";
+            return $resultArr;
+        }
         $articles = $html
                 ->find('html>body>div#gs_body>div.container>div.gs_inhalt>div.span-fluid-wide>div#gs_treffer>article.teilnehmer');
                 /*->find('html',0)
@@ -58,9 +60,32 @@ class GelbeseitenDeService implements Grab\IGrabService{
                 ->find('article.teilnehmer');*/
 
         foreach($articles as $article) {
-            $lawer = [];
-            $lawer['name'] = $article->find('div.table div.a header div.name div.h2 a.teilnehmername span', 0)->plaintext;
-            $lawer['phone'] = $article->find('div.table div.d ul.profile li.phone a.telefonnummer span.teilnehmertelefon span.text span.nummer', 0)->plaintext;
+            $lawer = [
+                'placeId' => null, 
+                'uniqueId' => null, 
+                'name' => null,
+                'phone' => null,
+                'email' => null,
+                'website' => null,
+                'streetAddress' => null,
+                'postCode' => null,
+                'addressLocality' => null,
+                'lat' => null,
+                'lon' => null
+                        ];
+
+            if($uniqueIdentifierAttribute = $article->getAttribute ('id')){
+                $lawer['uniqueId'] = intval(str_replace("teilnehmer_","",$uniqueIdentifierAttribute));
+            }
+
+            $lawer['placeId'] = $placeId;
+
+            if($nameElement = $article->find('div.table div.a header div.name div.h2 a.teilnehmername span', 0)){
+                $lawer['name'] = $nameElement->plaintext;
+            }
+            if($phoneElement = $article->find('div.table div.d ul.profile li.phone a.telefonnummer span.teilnehmertelefon span.text span.nummer', 0)){
+                $lawer['phone'] = $phoneElement->plaintext;
+            }
             if($emailElement = $article->find('div.table div.d ul.profile li.link_blue div.email a.link', 0)){
                 $lawer['email'] = $this->getStrippedEmail($emailElement->href);
             }
@@ -78,6 +103,11 @@ class GelbeseitenDeService implements Grab\IGrabService{
                         $lawer['postCode'] = $postCodeElement->plaintext;
                     if($addressLocalityElement = $addressElement->find('span[itemprop=addressLocality]',0))
                         $lawer['addressLocality'] = $addressLocalityElement->plaintext;
+            }
+            if($dataMapAttribute = $article->getAttribute ('data-map')){
+                $dataMapAttributeObj = json_decode($dataMapAttribute);
+                $lawer['lat'] = $dataMapAttributeObj->wgs84Lat;
+                $lawer['lon'] = $dataMapAttributeObj->wgs84Long;
             }
 
             $resultArr[] = $lawer;

@@ -1,7 +1,6 @@
 <?php
 namespace Repositories;
 
-interface IRepository{
-
-    public function Get($num);
+interface IRepository extends ILookupRepository{
+    public function Save($modelsArr);
 }
