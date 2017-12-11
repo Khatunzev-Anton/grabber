@@ -23,7 +23,7 @@ class GelbeseitenDeService implements Grab\IGrabService{
     public function parse($lookupElement){
          $parsedArr = [];
          $PARSED_BLOCK_COUNT = 15;
-         $this->pageUrl = $this->baseUrl . ($lookupElement->city . ',,' . $lookupElement->postcode . ',,,umkreis-30000');
+         $this->pageUrl = $this->baseUrl . ($lookupElement->city . ',,' . $lookupElement->postcode . ',,,umkreis-0');
          do{
              $parsedBlock = [];
              $parsedBlock = $this->parsePage($this->pageUrl,$lookupElement->id);

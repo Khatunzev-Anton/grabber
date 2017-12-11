@@ -24,7 +24,7 @@ class GrabController extends Controller
 
 
     public function Grab(Request $request){
-        $lookupArr = $this->__lookupRepo->get(1000);
+        $lookupArr = $this->__lookupRepo->get(10000);
         $recordsCount = 0;
         $lookupsCount = 0;
         
