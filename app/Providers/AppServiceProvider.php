@@ -27,7 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        
-        $this->app->bind('Services\Grab\IGrabService', 'Services\Grab\Gelbeseiten\GelbeseitenDeService');
+        $grabServiceName = 'Services\Grab\Gelbeseiten\GelbeseitenDeService';
+        if($this->app->request->is('*/googlecheck')){
+            $grabServiceName = 'Services\Grab\Google\GoogleComService';
+        }
+        $this->app->bind('Services\Grab\IGrabService', $grabServiceName);
     }
 }

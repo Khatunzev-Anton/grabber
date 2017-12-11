@@ -16,6 +16,10 @@ class Repository implements IRepository {
     public function Get($num){
         return $this->model->select()->limit($num)->get();
     }
+
+    public function GetFiltered($num, $whereClause){
+        return $this->model->select()->whereRaw($whereClause)->limit($num)->get();
+    }
     
     public function Save($modelsArr){
         return DB::table($this->model->getTable())->insert($modelsArr);

@@ -20,7 +20,12 @@ class Lawer extends Model
         'postCode',
         'addressLocality',
         'lat',
-        'lon'
+        'lon',
+        'parsedwithgoogle',
+        'googlename',
+        'googleaddress',
+        'googlephone',
+        'googlewebsite'
     ];
 
 }
