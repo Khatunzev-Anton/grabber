@@ -25,7 +25,10 @@ class Lawer extends Model
         'googlename',
         'googleaddress',
         'googlephone',
-        'googlewebsite'
+        'googlewebsite',
+        'googlequerystring',
+        'googlewebsitemetadescription',
+        'googlewebsitemetakeywords'
     ];
 
 }

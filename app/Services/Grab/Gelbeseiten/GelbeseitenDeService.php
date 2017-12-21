@@ -23,7 +23,7 @@ class GelbeseitenDeService implements Grab\IGrabService{
     public function parse($lookupElement){
          $parsedArr = [];
          $PARSED_BLOCK_COUNT = 15;
-         $this->pageUrl = $this->baseUrl . ($lookupElement->city . ',,' . $lookupElement->postcode . ',,,umkreis-0');
+         $this->pageUrl = $this->baseUrl . ($lookupElement->city . ',,' . $lookupElement->postcode . ',,,umkreis-1000');
          do{
              $parsedBlock = [];
              $parsedBlock = $this->parsePage($this->pageUrl,$lookupElement->id);
@@ -38,16 +38,25 @@ class GelbeseitenDeService implements Grab\IGrabService{
     private function parsePage($url, $placeId){
         $resultArr = [];
         
-        echo "<br/>...parsing $url";
+        echo PHP_EOL . "<br/>...parsing $url";
         try{
             $html = @file_get_html($url);
             if($html === FALSE){
                 throw new Exception('error occurred');
             }
         }catch(Exception $e){
-            echo "<br/>failed to open page $url";
+            echo PHP_EOL . "<br/>failed to open page $url";
             return $resultArr;
         }
+
+        $headerEl = $html->find('div#trefferlistenstatuszeile div.span-fluid-wide div.gs_titel h1 span',0);
+        if($headerEl == null){
+            echo PHP_EOL . "<br/>no results found for place $placeId";
+            return $resultArr;
+        }
+
+
+
         $articles = $html
                 ->find('html>body>div#gs_body>div.container>div.gs_inhalt>div.span-fluid-wide>div#gs_treffer>article.teilnehmer');
                 /*->find('html',0)

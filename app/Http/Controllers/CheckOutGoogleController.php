@@ -22,16 +22,18 @@ class CheckOutGoogleController extends Controller
 
     public function CheckGoogle(Request $request){
         ob_end_flush();
+        
+        //$entityArr = $this->__repo->GetFiltered(20,'id = 59061');
         $entityArr = $this->__repo->GetFiltered(20,'parsedwithgoogle IS NOT TRUE');
 
         foreach($entityArr as $_lookupEl){    
-            echo "going to scrape el#" . $_lookupEl->id . PHP_EOL;
+            echo PHP_EOL . "<br />going to scrape el#" . $_lookupEl->id . PHP_EOL;
             $this->__grabService->parse($_lookupEl);
-            echo "scrapped" . PHP_EOL;
+            echo  PHP_EOL . "<br />scrapped" . PHP_EOL;
             $_lookupEl->save();
-            echo "saved" . PHP_EOL;
+            echo  PHP_EOL . "<br />saved" . PHP_EOL;
 
         }
-        return "Complete!";
+        return "<br />Complete!";
     }
 }

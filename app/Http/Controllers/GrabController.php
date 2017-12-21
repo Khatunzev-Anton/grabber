@@ -24,6 +24,7 @@ class GrabController extends Controller
 
 
     public function Grab(Request $request){
+        
         $lookupArr = $this->__lookupRepo->get(10000);
         $recordsCount = 0;
         $lookupsCount = 0;
@@ -37,13 +38,13 @@ class GrabController extends Controller
             $recordsCount+= count($resultsArr);
             $lookupsCount++;
 
-            echo "<br/>lookup $lookupsCount finished. Total records: $recordsCount";
+            echo PHP_EOL . "<br />lookup $lookupsCount finished. Total records: $recordsCount";
 
             $resultsArr = null;
         }
 
         $lookupArr = null;
 
-        return "<br/>Complete!<br/>Records Count:$recordsCount<br/>Lookups:$lookupsCount";
+        return PHP_EOL . "<br /><br/>Complete!<br/>Records Count:$recordsCount<br/>Lookups:$lookupsCount";
     }
 }

@@ -21,13 +21,17 @@ class GoogleComService implements Grab\IGrabService{
     }
 
     public function parse($lookupElement){
-         $this->pageUrl = $this->baseUrl .  '?q=' . urlencode($lookupElement->name . ' ' . str_replace('&nbsp;','',$lookupElement->streetAddress) . ', ' . $lookupElement->postCode);
+         $this->pageUrl = $this->baseUrl . '?q=' . $this->getQuerystring($lookupElement);
          $this->parsePage($this->pageUrl, $lookupElement);
+    }
+
+    private function getQuerystring($lookupElement){
+        return urlencode($lookupElement->name . ' ' . str_replace('&nbsp;','',$lookupElement->streetAddress) . ', ' . $lookupElement->postCode);
     }
 
     private function parsePage($url, $lookupElement){
         
-        echo PHP_EOL . "<br/>...parsing $url" . PHP_EOL;
+        echo PHP_EOL . "<br />...parsing $url" . PHP_EOL;
         try{
             echo "t0" . PHP_EOL;
             //$html = file_get_html($url);
@@ -52,11 +56,12 @@ class GoogleComService implements Grab\IGrabService{
                 throw new Exception('error occurred');
             }
         }catch(Exception $e){
-            echo "<br/>failed to open page $url" . PHP_EOL;
+            echo PHP_EOL . "<br />failed to open page $url" . PHP_EOL;
             return;
         }
         finally{
             $lookupElement->parsedwithgoogle = true;
+            $lookupElement->googlequerystring = $this->getQuerystring($lookupElement);
         }
 
         $quickResultBlock = $html
@@ -78,8 +83,61 @@ class GoogleComService implements Grab\IGrabService{
              $lookupElement->googlewebsite = $this->getStrippedWebsite(ltrim($websiteElement->href, " /url?"));
         }
 
+        if($lookupElement->googlewebsite){
+            $this->parseWebPage($lookupElement->googlewebsite,$lookupElement);
+        }else{
+            if($lookupElement->website){
+                $this->parseWebPage($lookupElement->website,$lookupElement);
+            }
+        }
+
         $html = null;
         $quickResultBlock = null;
+    }
+
+    private function parseWebPage($url, $lookupElement){
+        echo PHP_EOL . "<br />....WEBPAGE PARSING: $url" . PHP_EOL;
+        try{
+            $ch = curl_init();
+
+            $header = array("Connection: Keep-Alive", "User-Agent: Mozilla/5.0");
+            curl_setopt($ch, CURLOPT_URL,$url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+            $response = curl_exec ($ch);
+
+            curl_close ($ch);
+
+            $html = str_get_html($response);
+
+            if($html === FALSE){
+                throw new Exception('error occurred');
+            }
+        }catch(Exception $e){
+            echo PHP_EOL . "<br />FAILED TO PARSE WEBPAGE: $url" . PHP_EOL;
+            return;
+        }
+
+        if($descriptionElement = $html->find('meta[name=description]', 0)){
+            if(mb_check_encoding($descriptionElement->content, "UTF-8")){
+                $lookupElement->googlewebsitemetadescription = $descriptionElement->content;
+            }else{
+                echo PHP_EOL . "<br />!!!INVALID ENCODING(description): $descriptionElement->content" . PHP_EOL;
+            }
+        }
+
+        if($keywordsElement = $html->find('meta[name=keywords]', 0)){
+            if(mb_check_encoding($keywordsElement->content, "UTF-8")){
+                $lookupElement->googlewebsitemetakeywords = $keywordsElement->content;
+            }else{
+                echo PHP_EOL . "<br />!!!INVALID ENCODING(keyword): $keywordsElement->content" . PHP_EOL;
+            }
+        }
+        echo PHP_EOL . "<br />WEBPAGE PARSED";
+        $html = null;
     }
 
     private function getStrippedWebsite($str){
