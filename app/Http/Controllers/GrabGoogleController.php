@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Repositories;
 use Services;
 
-class GrabController extends Controller
+class GrabGoogleController extends Controller
 {
     private $__lookupRepo;
     private $__repo;
@@ -22,16 +22,17 @@ class GrabController extends Controller
         $this->__grabService = $grabService;
     }
 
-
     public function Grab(Request $request){
         
-        //$lookupArr = $this->__lookupRepo->get(10000);
+        $lookupArr = $this->__lookupRepo->get(10000);
         //FIX THIS CRAP LATER!!!
-        $lookupArr = $this->__lookupRepo->GetFiltered(10000, 'id > (SELECT MAX("placeId") AS id from lawers)');
+        //$lookupArr = $this->__lookupRepo->GetFiltered(10000, 'id > (SELECT MAX("placeId") AS id from lawers)');
         $recordsCount = 0;
         $lookupsCount = 0;
         
         ob_end_flush();
+        
+        echo PHP_EOL . "<br />Google parsing started";
 
         foreach($lookupArr as $_lookupEl){    
             $resultsArr = $this->__grabService->parse($_lookupEl);

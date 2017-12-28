@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Models;
 use Repositories\Places;
 use Repositories\Lawers;
+use Repositories\LawyersGoogle;
 
 
 class RepoServiceProvider extends ServiceProvider
@@ -35,8 +36,14 @@ class RepoServiceProvider extends ServiceProvider
             return new $lookupRepoClassName(new $lookupModelClassName);
         });
 
-        $RepoClassName = 'Repositories\Lawers\LawersRepository';
-        $ModelClassName = 'App\Models\Lawer';
+        
+        if($this->app->request->is('*/grabgoogle')){
+            $RepoClassName = 'Repositories\LawyersGoogle\LawyersGoogleRepository';
+            $ModelClassName = 'App\Models\LawyerGoogle';          
+        }else{
+            $RepoClassName = 'Repositories\Lawers\LawersRepository';
+            $ModelClassName = 'App\Models\Lawer';
+        }
 
         $this->app->bind('Repositories\IRepository', function ($app) use($RepoClassName, $ModelClassName) {
             return new $RepoClassName(new $ModelClassName);

@@ -23,7 +23,7 @@ class GelbeseitenDeService implements Grab\IGrabService{
     public function parse($lookupElement){
          $parsedArr = [];
          $PARSED_BLOCK_COUNT = 15;
-         $this->pageUrl = $this->baseUrl . ($lookupElement->city . ',,' . $lookupElement->postcode . ',,,umkreis-1000');
+         $this->pageUrl = $this->baseUrl . ($lookupElement->city . ',,' . $lookupElement->postcode . ',,,umkreis-100');
          do{
              $parsedBlock = [];
              $parsedBlock = $this->parsePage($this->pageUrl,$lookupElement->id);
@@ -92,8 +92,13 @@ class GelbeseitenDeService implements Grab\IGrabService{
             if($nameElement = $article->find('div.table div.a header div.name div.h2 a.teilnehmername span', 0)){
                 $lawer['name'] = $nameElement->plaintext;
             }
-            if($phoneElement = $article->find('div.table div.d ul.profile li.phone a.telefonnummer span.teilnehmertelefon span.text span.nummer', 0)){
-                $lawer['phone'] = $phoneElement->plaintext;
+            if($phoneElement = $article->find('div.table div.d ul.profile li.phone a.telefonnummer span.teilnehmertelefon span.text', 0)){
+                if($phoneTextElement = $phoneElement->find('span.nummer', 0)){
+                    $lawer['phone'] = $phoneTextElement->plaintext;
+                    if($phoneSuffixElement = $phoneElement->find('span.suffix', 0)){
+                        $lawer['phone'] .= $phoneSuffixElement->plaintext;
+                    }
+                }
             }
             if($emailElement = $article->find('div.table div.d ul.profile li.link_blue div.email a.link', 0)){
                 $lawer['email'] = $this->getStrippedEmail($emailElement->href);

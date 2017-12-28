@@ -24,7 +24,7 @@ class CheckOutGoogleController extends Controller
         ob_end_flush();
         
         //$entityArr = $this->__repo->GetFiltered(20,'id = 59061');
-        $entityArr = $this->__repo->GetFiltered(20,'parsedwithgoogle IS NOT TRUE');
+        $entityArr = $this->__repo->GetFiltered(10000,'parsedwithgoogle IS NOT TRUE');
 
         foreach($entityArr as $_lookupEl){    
             echo PHP_EOL . "<br />going to scrape el#" . $_lookupEl->id . PHP_EOL;
