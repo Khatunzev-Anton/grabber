@@ -25,6 +25,10 @@ class GoogleComService implements Grab\IGrabService{
          $this->parsePage($this->pageUrl, $lookupElement);
     }
 
+    public function parseWebsite($lookupElement){
+        throw new Exception('Not implemented');
+    }
+
     private function getQuerystring($lookupElement){
         return urlencode($lookupElement->name . ' ' . str_replace('&nbsp;','',$lookupElement->streetAddress) . ', ' . $lookupElement->postCode);
     }
@@ -33,7 +37,6 @@ class GoogleComService implements Grab\IGrabService{
         
         echo PHP_EOL . "<br />...parsing $url" . PHP_EOL;
         try{
-            echo "t0" . PHP_EOL;
             //$html = file_get_html($url);
 
 
@@ -44,6 +47,8 @@ class GoogleComService implements Grab\IGrabService{
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
+	        curl_setopt($ch, CURLOPT_TIMEOUT, 400); //timeout in seconds
 
             $response = curl_exec ($ch);
 
@@ -51,7 +56,6 @@ class GoogleComService implements Grab\IGrabService{
 
             $html = str_get_html($response);
 
-            echo "t1" . PHP_EOL;
             if($html === FALSE){
                 throw new Exception('error occurred');
             }
@@ -60,35 +64,39 @@ class GoogleComService implements Grab\IGrabService{
             return;
         }
         finally{
-            $lookupElement->parsedwithgoogle = true;
             $lookupElement->googlequerystring = $this->getQuerystring($lookupElement);
+            $lookupElement->parsedwithgoogle = true;// !empty($lookupElement->googlename);
         }
 
         $quickResultBlock = $html
                 ->find('td#rhs_block',0);
 
-        if($nameElement = $quickResultBlock->find('div.g div._o0d div._B5d', 0)){
-             $lookupElement->googlename = $nameElement->plaintext;
-        }
+        if($quickResultBlock != null){
 
-        if($addressElement = $quickResultBlock->find('div.g div._o0d div._gF span._tA', 0)){
-             $lookupElement->googleaddress = $addressElement->plaintext;
-        }
-
-        if($phoneElement = $quickResultBlock->find('div.g div._o0d div._gF span._tA', 1)){
-             $lookupElement->googlephone = $phoneElement->plaintext;
-        }
-
-        if($websiteElement = $quickResultBlock->find('div.g div._o0d div._pIf div._IGf a.fl', 1)){
-             $lookupElement->googlewebsite = $this->getStrippedWebsite(ltrim($websiteElement->href, " /url?"));
-        }
-
-        if($lookupElement->googlewebsite){
-            $this->parseWebPage($lookupElement->googlewebsite,$lookupElement);
-        }else{
-            if($lookupElement->website){
-                $this->parseWebPage($lookupElement->website,$lookupElement);
+            if($nameElement = $quickResultBlock->find('div.g div._o0d div._B5d', 0)){
+                $lookupElement->googlename = $nameElement->plaintext;
             }
+
+            if($addressElement = $quickResultBlock->find('div.g div._o0d div._gF span._tA', 0)){
+                $lookupElement->googleaddress = $addressElement->plaintext;
+            }
+
+            if($phoneElement = $quickResultBlock->find('div.g div._o0d div._gF span._tA', 1)){
+                $lookupElement->googlephone = $phoneElement->plaintext;
+            }
+
+            if($websiteElement = $quickResultBlock->find('div.g div._o0d div._pIf div._IGf a.fl', 1)){
+                $lookupElement->googlewebsite = $this->getStrippedWebsite(ltrim($websiteElement->href, " /url?"));
+            }
+
+            if($lookupElement->googlewebsite){
+                $this->parseWebPage($lookupElement->googlewebsite,$lookupElement);
+            }else{
+                if($lookupElement->website){
+                    $this->parseWebPage($lookupElement->website,$lookupElement);
+                }
+            }
+
         }
 
         $html = null;
@@ -106,6 +114,8 @@ class GoogleComService implements Grab\IGrabService{
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
+	        curl_setopt($ch, CURLOPT_TIMEOUT, 400); //timeout in seconds
 
             $response = curl_exec ($ch);
 

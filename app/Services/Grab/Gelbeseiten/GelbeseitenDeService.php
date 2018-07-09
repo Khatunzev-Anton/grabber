@@ -35,6 +35,10 @@ class GelbeseitenDeService implements Grab\IGrabService{
          return $parsedArr;
     }
 
+    public function parseWebsite($lookupElement){
+        throw new Exception('Not implemented');
+    }
+
     private function parsePage($url, $placeId){
         $resultArr = [];
         

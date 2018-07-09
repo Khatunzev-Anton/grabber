@@ -18,6 +18,8 @@ Route::get('/', function () {
 Route::group(['prefix' => 'grabber'], function() {
     Route::get('grab', ['as' => 'grabber.grab', 'uses' => 'GrabController@Grab']);
     Route::get('googlecheck', ['as' => 'grabber.googlecheck', 'uses' => 'CheckOutGoogleController@CheckGoogle']);
+    Route::get('googlecheckalternative', ['as' => 'grabber.googlecheckalternative', 'uses' => 'CheckOutGoogleController@CheckGoogleAlternative']);
     Route::get('grabgoogle', ['as' => 'grabber.grabgoogle', 'uses' => 'GrabGoogleController@Grab']);
+    Route::get('grabgoogleemails', ['as' => 'grabber.grabgoogleemails', 'uses' => 'GrabGoogleController@GrabEmails']);
 });
 

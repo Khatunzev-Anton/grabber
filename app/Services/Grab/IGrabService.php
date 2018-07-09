@@ -7,4 +7,6 @@ interface IGrabService{
     public function getUrl();
 
     public function parse($lookupElement);
+
+    public function parseWebsite($lookupElement);
 }
